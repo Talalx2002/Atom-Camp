@@ -47,8 +47,37 @@ ROUND( (COUNT(DISTINCT(SUB.CUSTOMER_ID)) / (SELECT COUNT(DISTINCT customer_id) F
 FROM SUBSCRIPTIONS SUB
 JOIN PLANS P ON SUB.PLAN_ID = P.PLAN_ID
 WHERE
-P.PLAN_NAME="TRIAL" AND
+P.PLAN_NAME="trial" AND
 SUB.START_DATE = DATE_ADD(SUB.START_DATE , INTERVAL 7 DAY);
+
+-- 6. What is the number and percentage of customer plans after their initial free trial?
+
+SELECT COUNT(DISTINCT(SUB.CUSTOMER_ID)) AS CUSTOMER_COUNT,
+ROUND( (COUNT(DISTINCT(SUB.CUSTOMER_ID)) / (SELECT COUNT(DISTINCT customer_id) FROM subscriptions) ) *100 ,1) AS PERCENTAGE
+FROM SUBSCRIPTIONS SUB
+JOIN PLANS P ON SUB.PLAN_ID = P.PLAN_ID
+WHERE
+P.PLAN_NAME != "trial" ;
+
+-- 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020- 12-31?
+
+SELECT 
+    p.plan_name,
+    COUNT(DISTINCT s.customer_id) AS customer_count,
+    ROUND((COUNT(DISTINCT (s.customer_id)) * 100.0 / total_customers.total_customer_count), 1) AS percentage
+FROM 
+    subscriptions s
+JOIN 
+    plans p ON s.plan_id = p.plan_id
+JOIN
+    (SELECT COUNT(DISTINCT (customer_id)) AS total_customer_count FROM subscriptions WHERE start_date <= '2020-12-31') AS total_customers
+    -- Subquery to calculate the total customer count as of December 31, 2020
+GROUP BY 
+    p.plan_name, total_customers.total_customer_count;
+
+-- 8. How many customers have upgraded to an annual plan in 2020?
+
+
 
 
 
