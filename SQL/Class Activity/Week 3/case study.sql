@@ -131,3 +131,63 @@ JOIN sales s ON first_orders.customer_id = s.customer_id AND first_orders.first_
 JOIN menu m ON s.product_id = m.product_id;
 
 
+
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DepartmentID INT,
+    Salary DECIMAL(10, 2)
+);
+
+INSERT INTO Employees (EmployeeID, FirstName, LastName, DepartmentID, Salary)
+VALUES
+    (1, 'John', 'Doe', 1, 50000),
+    (2, 'Jane', 'Smith', 2, 60000),
+    (3, 'Alice', 'Johnson', 1, 70000),
+    (4, 'Michael', 'Brown', 3, 55000),
+    (5, 'Emily', 'Jones', 2, 65000);
+CREATE TABLE Salaries (
+    EmployeeID INT PRIMARY KEY,
+    Salary DECIMAL(10, 2)
+);
+
+INSERT INTO Salaries (EmployeeID, Salary)
+VALUES
+    (1, 50000),
+    (2, 60000),
+    (3, 70000),
+    (4, 55000),
+    (5, 65000);
+CREATE TABLE Departments (
+    DepartmentID INT PRIMARY KEY,
+    DepartmentName VARCHAR(50)
+);
+
+INSERT INTO Departments (DepartmentID, DepartmentName)
+VALUES
+    (1, 'Sales'),
+    (2, 'Marketing'),
+    (3, 'IT');
+    
+    
+    WITH DEPARTAMENTAVERGAESSALRY AS (
+    SELECT D.DEPARTMENTNAME , AVG(E.SALARY) AS AVERGAE_SALARY FROM EMPLOYEES E
+    JOIN DEPARTMENTS D ON E.DEPARTMENTID = D.DEPARTMENTID 
+    GROUP BY D.DEPARTMENTNAME 
+    )
+    SELECT * FROM DEPARTAMENTAVERGAESSALRY;
+    
+        WITH TOP_DEPARTMENT AS (
+    SELECT D.DEPARTMENTNAME ,D.DEPARTMENTID, AVG(E.SALARY) AS AVERGAE_SALARY FROM EMPLOYEES E
+    JOIN DEPARTMENTS D ON E.DEPARTMENTID = D.DEPARTMENTID 
+    GROUP BY E.DEPARTMENTID
+    ORDER BY AVERGAE_SALARY DESC 
+    LIMIT 1
+    )
+--     SELECT * FROM TOP_DEPARTMENT;
+    
+    SELECT E.FIRSTNAME
+FROM EMPLOYEES E
+JOIN TOP_DEPARTMENT TD ON E.DEPARTMENTID = TD.DEPARTMENTID;
+    
